@@ -214,6 +214,7 @@ export const useMRT_TableOptions: <TData extends MRT_RowData>(
     enableRowSelection,
     enableRowVirtualization,
     enableSelectAll,
+    enableClearSelection,
     enableSorting,
     enableStickyHeader,
     enableTableFooter,
