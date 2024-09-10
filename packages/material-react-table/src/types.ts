@@ -879,6 +879,7 @@ export interface MRT_TableOptions<TData extends MRT_RowData>
   enableRowSelection?: ((row: MRT_Row<TData>) => boolean) | boolean;
   enableRowVirtualization?: boolean;
   enableSelectAll?: boolean;
+  enableClearSelection?: boolean;
   enableStickyFooter?: boolean;
   enableStickyHeader?: boolean;
   enableTableFooter?: boolean;

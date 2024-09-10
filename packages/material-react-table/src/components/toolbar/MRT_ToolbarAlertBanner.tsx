@@ -29,6 +29,7 @@ export const MRT_ToolbarAlertBanner = <TData extends MRT_RowData>({
     options: {
       enableRowSelection,
       enableSelectAll,
+      enableClearSelection,
       localization,
       manualPagination,
       muiToolbarAlertBannerChipProps,
@@ -67,15 +68,17 @@ export const MRT_ToolbarAlertBanner = <TData extends MRT_RowData>({
         {localization.selectedCountOfRowCountRowsSelected
           ?.replace('{selectedCount}', selectedRowCount.toLocaleString())
           ?.replace('{rowCount}', totalRowCount.toString())}
-        <Button
-          onClick={(event) =>
-            getMRT_SelectAllHandler({ table })(event, false, true)
-          }
-          size="small"
-          sx={{ p: '2px' }}
-        >
-          {localization.clearSelection}
-        </Button>
+        {enableClearSelection ? (
+          <Button
+            onClick={(event) =>
+              getMRT_SelectAllHandler({ table })(event, false, true)
+            }
+            size="small"
+            sx={{ p: '2px' }}
+          >
+            {localization.clearSelection}
+          </Button>
+        ) : null}
       </Stack>
     ) : null;
 
