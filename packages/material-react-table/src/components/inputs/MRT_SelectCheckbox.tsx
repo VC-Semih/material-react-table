@@ -12,6 +12,7 @@ import {
   getIsRowSelected,
   getMRT_RowSelectionHandler,
   getMRT_SelectAllHandler,
+  getSelectableLeafRows,
 } from '../../utils/row.utils';
 import { getCommonTooltipProps } from '../../utils/style.utils';
 import { parseFromValuesOrFunc } from '../../utils/utils';
@@ -43,15 +44,14 @@ export const MRT_SelectCheckbox = <TData extends MRT_RowData>({
 
   const selectAll = !row;
 
-  const getLeafRows = () => (
-    selectAllMode === 'page'
-    ? table.getPaginationRowModel().flatRows
-    : table.getPrePaginationRowModel().flatRows
-  ).filter((r) => !r.getIsGrouped());
+  const selectableRows = selectAll
+    ? getSelectableLeafRows(table, selectAllMode === 'all')
+    : [];
 
   // Fix: getIsAllPageRowsSelected() / getIsAllRowsSelected() include group rows
   const allRowsSelected = selectAll
-    ? getLeafRows().every((r) => r.getIsSelected())
+    ? selectableRows.length > 0 &&
+      selectableRows.every((r) => r.getIsSelected())
     : undefined;
 
   const isChecked = selectAll
@@ -85,7 +85,10 @@ export const MRT_SelectCheckbox = <TData extends MRT_RowData>({
       : localization.toggleSelectRow,
     checked: isChecked,
     disabled:
-      isLoading || (row && !row.getCanSelect()) || row?.id === 'mrt-row-create',
+      isLoading ||
+      (selectAll && selectableRows.length === 0) ||
+      (row && !row.getCanSelect()) ||
+      row?.id === 'mrt-row-create',
     inputProps: {
       'aria-label': selectAll
         ? localization.toggleSelectAll
@@ -127,8 +130,7 @@ export const MRT_SelectCheckbox = <TData extends MRT_RowData>({
         <Checkbox
           indeterminate={
             !isChecked && selectAll
-              ? // Fix: getIsSomeRowsSelected() includes group rows, use leaf-only filter
-                getLeafRows().some((r) => r.getIsSelected())
+              ? selectableRows.some((r) => r.getIsSelected())
               : row?.getIsSomeSelected() && row.getCanSelectSubRows()
           }
           {...commonProps}

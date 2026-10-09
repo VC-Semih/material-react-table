@@ -266,16 +266,23 @@ export const getMRT_SelectAllHandler =
     // Fix: replaces toggleAllPageRowsSelected() / toggleAllRowsSelected() which
     // include group rows in flatRows, causing group IDs to pollute rowSelection.
     const checked = value ?? (event as any).target.checked;
-    const rows = (selectAllMode === 'all' || forceAll
-      ? table.getPrePaginationRowModel().flatRows
-      : table.getPaginationRowModel().flatRows
-    ).filter((row) => !row.getIsGrouped());
-    rows.forEach((row) => {
-      if (row.getCanSelect()) row.toggleSelected(checked);
-    });
-    
+    const rows = getSelectableLeafRows(
+      table,
+      selectAllMode === 'all' || !!forceAll,
+    );
+    rows.forEach((row) => row.toggleSelected(checked));
+
     if (enableRowPinning && rowPinningDisplayMode?.includes('select')) {
       table.setRowPinning({ bottom: [], top: [] });
     }
     lastSelectedRowId.current = null;
   };
+
+export const getSelectableLeafRows = <TData extends MRT_RowData>(
+  table: MRT_TableInstance<TData>,
+  all: boolean,
+) =>
+  (all
+    ? table.getPrePaginationRowModel().flatRows
+    : table.getPaginationRowModel().flatRows
+  ).filter((row) => !row.getIsGrouped() && row.getCanSelect());
